@@ -1,9 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { CreateImageDto } from './dto/create-image.dto';
-import { UpdateImageDto } from './dto/update-image.dto';
+import { PrismaClient } from '@prisma/client';
 
 @Injectable()
-export class ImagesService {
+export class ImagesService extends PrismaClient implements OnModuleInit {
+  private readonly logger = new Logger('ImagesService');
+
+  async onModuleInit() {
+    await this.$connect();
+    this.logger.log('MongoDB connected successfully');
+  }
+
   create(createImageDto: CreateImageDto) {
     return 'This action adds a new image' + createImageDto;
   }
@@ -14,10 +21,6 @@ export class ImagesService {
 
   findOne(id: number) {
     return `This action returns a #${id} image`;
-  }
-
-  update(id: number, updateImageDto: UpdateImageDto) {
-    return `This action updates a #${id} image` + updateImageDto;
   }
 
   remove(id: number) {
