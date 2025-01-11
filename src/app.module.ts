@@ -1,7 +1,13 @@
 import { Module } from '@nestjs/common';
 import { ImagesModule } from './images/images.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [ImagesModule],
+  imports: [
+    ImagesModule,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+  ],
 })
 export class AppModule {}

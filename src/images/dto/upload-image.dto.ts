@@ -1,9 +1,6 @@
 import { IsString } from 'class-validator';
 
-export class CreateImageDto {
+export class UploadImageDto {
   @IsString()
   uploadedBy: string;
-
-  @IsString()
-  imageUrl: string;
 }
