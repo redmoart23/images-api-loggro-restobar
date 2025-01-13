@@ -85,8 +85,8 @@ export class ImagesService extends PrismaClient implements OnModuleInit {
     return await this.image.findMany({
       where: {
         createdAt: {
-          gte: startDate,
-          lte: endDate,
+          gte: new Date(startDate + 'T00:00:00.000Z'),
+          lte: new Date(endDate + 'T23:59:59.999Z'),
         },
       },
     });
