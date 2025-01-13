@@ -42,7 +42,7 @@ export class ImagesController {
     return images;
   }
 
-  @Get('search')
+  @Get('stats')
   async getImageStats(
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,

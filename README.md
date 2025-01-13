@@ -1,85 +1,102 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Aplicación de Procesamiento y Gestión de Imágenes
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Esta aplicación proporciona una API REST para procesar y almacenar imágenes, incluyendo la conversión de imágenes JPG/JPEG a PNG, su almacenamiento en un bucket de AWS S3, y la gestión de metadatos en una base de datos MongoDB utilizando Prisma.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+### Autor 
+Rafael Eduardo Monsalve Arboleda
 
-## Description
+## Despliegue 
+Este proyecto está desplegado en `NorthFlank`, el link es: https://example.com y la documentacion esta en https://example.com/api/docs
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Project setup
+## Funcionalidades
+
+1. **Subir y procesar imágenes**: Recibe imágenes JPG/JPEG, las convierte a PNG y las guarda en AWS S3.
+2. **Consultar imágenes entre fechas**: Permite obtener una lista de imágenes subidas entre un rango de fechas.
+3. **Estadísticas de imágenes**: Proporciona estadísticas sobre las imágenes subidas, agrupadas por fecha y hora.
+
+## Requisitos
+
+- Node.js >= 14
+- MongoDB (local o en la nube)
+- Cuenta de AWS (para el almacenamiento en S3)
+
+## Instalación
+
+### 1. Clonar el repositorio
 
 ```bash
-$ npm install
+git clone https://github.com/redmoart23/images-api-loggro-restobar.git
+cd images-api-loggro-restobar
 ```
 
-## Compile and run the project
+### 2. Instalar dependencias
+```bash
+npm install
+```
+
+### 3. Configurar las variables de entorno
+Copia el archivo .env.example a un nuevo archivo .env:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+cp .env.example .env
 ```
 
-## Run tests
+Modifica las siguientes variables en el archivo .env para configurarlas correctamente:
+
+- AWS_ACCESS_KEY_ID: Tu clave de acceso de AWS.
+- AWS_SECRET_ACCESS_KEY: Tu clave secreta de AWS.
+- AWS_REGION: La región de AWS donde se encuentra tu bucket S3.
+- AWS_S3_BUCKET_NAME: El nombre del bucket de S3 donde se guardarán las imágenes.
+- MONGODB_URI: La URI de conexión a tu base de datos MongoDB.
+- PRISMA_LOG_LEVEL: Nivel de logs de Prisma (opcional).
+
+
+### 4. Ejecutar la aplicación
+Con todas las configuraciones listas, ejecuta la aplicación en modo desarrollo:
 
 ```bash
-# unit tests
-$ npm run test
+npm run start:dev
+```
+La API estará disponible en http://localhost:3000.
 
-# e2e tests
-$ npm run test:e2e
 
-# test coverage
-$ npm run test:cov
+### 5. Acceder a la documentación de la API
+La API está documentada utilizando Swagger. Para acceder a la documentación, abre el siguiente endpoint en tu navegador:
+
+```bash
+http://localhost:3000/api/docs
 ```
 
-## Resources
 
-Check out a few resources that may come in handy when working with NestJS:
+Aquí podrás ver todos los endpoints disponibles, sus parámetros y ejemplos de respuesta.
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Estructura de la aplicación
+- **`/src:`** Contiene todo el código fuente de la API.
+- **`/modules:`** Cada módulo (como imágenes, usuarios, etc.) tiene su propia carpeta.
+- **`/services:`** Servicios que contienen la lógica de negocio.
+- **`/controllers:`** Controladores que gestionan las solicitudes HTTP.
+- **`/prisma:`** Archivos relacionados con Prisma y la base de datos.
+- **`/prisma/schema.prisma:`** El esquema de Prisma que define el modelo de datos para MongoDB.
 
-## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Tecnologías utilizadas
+- NestJS: Framework para construir aplicaciones backend escalables.
+- Prisma: ORM para interactuar con la base de datos MongoDB.
+- AWS S3: Servicio de almacenamiento en la nube para guardar las imágenes procesadas.
+- MongoDB: Base de datos NoSQL para almacenar metadatos de las imágenes subidas.
+- Swagger: Documentación interactiva de la API.
 
-## Stay in touch
+### Contribuciones
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Si deseas contribuir al proyecto, puedes hacer un fork del repositorio y abrir un pull request. Asegúrate de que tu código esté bien documentado y cubierto por pruebas.
 
-## License
+### **Explicación del contenido**:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+1. **Instalación**: Instrucciones detalladas para clonar el repositorio, instalar dependencias y configurar las variables de entorno.
+2. **Variables de Entorno**: Detalles sobre las variables necesarias para configurar AWS S3 y MongoDB, además de la referencia al archivo `.env.example`.
+3. **Estructura de la Aplicación**: Se explica cómo está organizada la aplicación, mencionando los principales directorios.
+4. **Swagger**: Se hace referencia a la documentación interactiva de la API utilizando Swagger, disponible en `/api/docs`.
+5. **Tecnologías**: Se mencionan las principales tecnologías utilizadas, como NestJS, Prisma, AWS S3 y MongoDB.
+6. **Contribuciones y Licencia**: Instrucciones sobre cómo contribuir y la licencia del proyecto.
+
