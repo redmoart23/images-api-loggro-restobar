@@ -34,7 +34,7 @@ export class ImagesService extends PrismaClient implements OnModuleInit {
   }
 
   async uploadImage(
-    uploadImageDto: UploadImageDto,
+    { uploadedBy }: UploadImageDto,
     file: Express.Multer.File,
   ): Promise<UploadedImageResponse> {
     const fileKey = `${Date.now()}.png`;
@@ -56,7 +56,7 @@ export class ImagesService extends PrismaClient implements OnModuleInit {
 
       const image = await this.image.create({
         data: {
-          uploadedBy: uploadImageDto.uploadedBy,
+          uploadedBy: uploadedBy,
           imageUrl: imageUrl,
         },
       });
@@ -81,6 +81,17 @@ export class ImagesService extends PrismaClient implements OnModuleInit {
     }
   }
 
+  async findByDates(startDate: string, endDate: string) {
+    return await this.image.findMany({
+      where: {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      },
+    });
+  }
+
   async remove(id: string) {
     try {
       return await this.image.delete({ where: { id: id } });
@@ -90,5 +101,42 @@ export class ImagesService extends PrismaClient implements OnModuleInit {
         error,
       );
     }
+  }
+
+  async countImagesGroupedByDay(startDate: string, endDate: string) {
+    const results = await this.image.groupBy({
+      by: ['createdAt'],
+      _count: {
+        id: true,
+      },
+      where: {
+        createdAt: {
+          gte: new Date(startDate + 'T00:00:00.000Z'),
+          lte: new Date(endDate + 'T23:59:59.999Z'),
+        },
+      },
+    });
+
+    const dailyCounts = new Map<string, number>();
+
+    results.forEach((entry) => {
+      const dateKey = entry.createdAt.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        timeZone: 'UTC',
+      });
+
+      dailyCounts.set(
+        dateKey,
+        (dailyCounts.get(dateKey) || 0) + entry._count.id,
+      );
+    });
+
+    return Array.from(dailyCounts.entries()).map(([date, count]) => ({
+      [date]: {
+        totalImagesUploaded: count,
+        imagesPerHour: parseFloat((count / 24).toFixed(2)),
+      },
+    }));
   }
 }

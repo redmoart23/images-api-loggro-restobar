@@ -7,6 +7,7 @@ import {
   Delete,
   UseInterceptors,
   UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
@@ -20,16 +21,40 @@ export class ImagesController {
 
   @Post()
   @UseInterceptors(FileInterceptor('file', { fileFilter: fileFilter }))
-  uploadImage(
+  async uploadImage(
     @UploadedFile() file: Express.Multer.File,
     @Body() uploadImageDto: UploadImageDto,
   ) {
-    return this.imagesService.uploadImage(uploadImageDto, file);
+    return await this.imagesService.uploadImage(uploadImageDto, file);
   }
 
   @Get()
   findAll() {
     return this.imagesService.findAll();
+  }
+
+  @Get('search')
+  async findByDates(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    const images = await this.imagesService.findByDates(startDate, endDate);
+    return images;
+  }
+
+  @Get('search')
+  async getImageStats(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+  ) {
+    const stats = await this.imagesService.countImagesGroupedByDay(
+      startDate,
+      endDate,
+    );
+    return {
+      message: 'Estadísticas de imágenes procesadas',
+      stats,
+    };
   }
 
   @Get(':id')
