@@ -12,6 +12,7 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 
 import { UploadImageDto } from './dto/upload-image.dto';
 import { envs } from 'src/config/envs';
+import { UploadedImageResponse } from './interfaces/uploaded-image-response.interface';
 
 @Injectable()
 export class ImagesService extends PrismaClient implements OnModuleInit {
@@ -32,8 +33,12 @@ export class ImagesService extends PrismaClient implements OnModuleInit {
     this.logger.log('MongoDB connected successfully');
   }
 
-  async uploadImage(uploadImageDto: UploadImageDto, file: Express.Multer.File) {
+  async uploadImage(
+    uploadImageDto: UploadImageDto,
+    file: Express.Multer.File,
+  ): Promise<UploadedImageResponse> {
     const fileKey = `${Date.now()}.png`;
+
     const pngBuffer = await sharp(file.buffer).png().toBuffer();
 
     try {

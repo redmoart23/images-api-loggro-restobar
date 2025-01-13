@@ -8,16 +8,18 @@ import {
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+
 import { ImagesService } from './images.service';
 import { UploadImageDto } from './dto/upload-image.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { fileFilter } from './helpers/filefilter.helper';
 
 @Controller('images')
 export class ImagesController {
   constructor(private readonly imagesService: ImagesService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(FileInterceptor('file', { fileFilter: fileFilter }))
   uploadImage(
     @UploadedFile() file: Express.Multer.File,
     @Body() uploadImageDto: UploadImageDto,
