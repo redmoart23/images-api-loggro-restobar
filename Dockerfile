@@ -1,23 +1,51 @@
-FROM node:20-alpine AS development
-WORKDIR /usr/src/app
-COPY --chown=node:node package*.json ./
-RUN npm ci -f
-COPY --chown=node:node . .
-USER node
+FROM node:20-alpine AS builder
 
-
-FROM node:20-alpine AS build
 WORKDIR /usr/src/app
-COPY --chown=node:node package*.json ./
-COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node . .
+
+# Install dependencies needed for Prisma Client generation
+RUN apk add --no-cache openssl
+
+# Copy package files
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install dependencies, including development dependencies
+RUN npm ci
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+# Copy application code
+COPY . .
+
+# Build the application
 RUN npm run build
-RUN npm ci -f --only=production && npm cache clean --force
-USER node
-
 
 FROM node:20-alpine AS production
-ENV NODE_ENV production
-COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
-COPY --chown=node:node --from=build /usr/src/app/dist ./dist
-CMD [ "node", "dist/main.js" ]
+
+WORKDIR /usr/src/app
+
+# Install dependencies needed for Prisma Client
+RUN apk add --no-cache openssl
+
+# Copy package files
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Install only production dependencies
+RUN npm ci --only=production
+
+# Copy built application
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
+
+# Generate Prisma Client in production
+RUN npx prisma generate
+
+USER node
+
+# Set environment variables
+ENV NODE_ENV=production
+
+# Start the application
+CMD ["node", "dist/main.js"]
