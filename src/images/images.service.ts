@@ -133,10 +133,9 @@ export class ImagesService extends PrismaClient implements OnModuleInit {
     });
 
     return Array.from(dailyCounts.entries()).map(([date, count]) => ({
-      [date]: {
-        totalImagesUploaded: count,
-        imagesPerHour: parseFloat((count / 24).toFixed(2)),
-      },
+      date,
+      totalImagesUploaded: count,
+      imagesPerHour: parseFloat((count / 24).toFixed(2)),
     }));
   }
 }

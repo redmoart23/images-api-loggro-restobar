@@ -51,10 +51,7 @@ export class ImagesController {
       startDate,
       endDate,
     );
-    return {
-      message: 'Estadísticas de imágenes procesadas',
-      stats,
-    };
+    return stats;
   }
 
   @Get(':id')
