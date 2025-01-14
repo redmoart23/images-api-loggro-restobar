@@ -3,7 +3,7 @@ import * as joi from 'joi';
 
 interface EnvVars {
   PORT: number;
-  MONGODB_DATABASE_URL: string;
+  DATABASE_URL: string;
   AWS_ACCESS_KEY_ID: string;
   AWS_SECRET_ACCESS_KEY: string;
   AWS_REGION: string;
@@ -13,7 +13,7 @@ interface EnvVars {
 const envsSchema = joi
   .object({
     PORT: joi.number().required(),
-    MONGODB_DATABASE_URL: joi.string().required(),
+    DATABASE_URL: joi.string().required(),
     AWS_ACCESS_KEY_ID: joi.string().required(),
     AWS_SECRET_ACCESS_KEY: joi.string().required(),
     AWS_REGION: joi.string().required(),
@@ -31,7 +31,7 @@ const envVars: EnvVars = value;
 
 export const envs = {
   port: envVars.PORT,
-  mongodbDatabaseUrl: envVars.MONGODB_DATABASE_URL,
+  mongodbDatabaseUrl: envVars.DATABASE_URL,
   awsAccessKeyId: envVars.AWS_ACCESS_KEY_ID,
   awsSecretAccessKey: envVars.AWS_SECRET_ACCESS_KEY,
   awsRegion: envVars.AWS_REGION,
