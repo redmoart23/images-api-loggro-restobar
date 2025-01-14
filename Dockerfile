@@ -1,51 +1,44 @@
-FROM node:20-alpine AS builder
+# 1. Dependencies
+FROM node:21-alpine3.19 as deps
 
 WORKDIR /usr/src/app
 
-# Install dependencies needed for Prisma Client generation
-RUN apk add --no-cache openssl
-
-# Copy package files
 COPY package*.json ./
-COPY prisma ./prisma/
 
-# Install dependencies, including development dependencies
-RUN npm ci
+RUN npm install
 
-# Generate Prisma Client
-RUN npx prisma generate
 
-# Copy application code
+# 2. Build
+FROM node:21-alpine3.19 as build
+
+WORKDIR /usr/src/app
+
+#copy node modules
+COPY --from=deps /usr/src/app/node_modules ./node_modules   
+
 COPY . .
 
-# Build the application
+#RUN npm run test
 RUN npm run build
 
-FROM node:20-alpine AS production
+RUN npm ci -f --only=production && npm cache clean --force
+
+RUN npx prisma generate
+
+
+# 3. Production
+FROM node:21-alpine3.19 as prod
 
 WORKDIR /usr/src/app
 
-# Install dependencies needed for Prisma Client
-RUN apk add --no-cache openssl
+COPY --from=build /usr/src/app/node_modules ./node_modules   
 
-# Copy package files
-COPY package*.json ./
-COPY prisma ./prisma/
+COPY --from=build /usr/src/app/dist ./dist
 
-# Install only production dependencies
-RUN npm ci --only=production
-
-# Copy built application
-COPY --from=builder /usr/src/app/dist ./dist
-COPY --from=builder /usr/src/app/node_modules/.prisma ./node_modules/.prisma
-
-# Generate Prisma Client in production
-RUN npx prisma generate
+ENV NODE_ENV=production
 
 USER node
 
-# Set environment variables
-ENV NODE_ENV=production
+EXPOSE 8080
 
-# Start the application
 CMD ["node", "dist/main.js"]
