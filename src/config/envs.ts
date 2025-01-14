@@ -31,7 +31,7 @@ const envVars: EnvVars = value;
 
 export const envs = {
   port: envVars.PORT,
-  mongodbDatabaseUrl: envVars.DATABASE_URL,
+  databaseUrl: envVars.DATABASE_URL,
   awsAccessKeyId: envVars.AWS_ACCESS_KEY_ID,
   awsSecretAccessKey: envVars.AWS_SECRET_ACCESS_KEY,
   awsRegion: envVars.AWS_REGION,

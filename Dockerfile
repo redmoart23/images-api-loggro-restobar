@@ -1,44 +1,39 @@
-# 1. Dependencies
-FROM node:21-alpine3.19 as deps
+# Stage 1: Build Stage
+FROM node:21-alpine3.19 AS builder
 
+# Set the working directory
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+# Copy package files and install dependencies
+COPY package.json package-lock.json ./
+RUN npm install --legacy-peer-deps
 
-RUN npm install
-
-
-# 2. Build
-FROM node:21-alpine3.19 as build
-
-WORKDIR /usr/src/app
-
-#copy node modules
-COPY --from=deps /usr/src/app/node_modules ./node_modules   
-
+# Copy the rest of the application code
 COPY . .
 
-#RUN npm run test
-RUN npm run build
-
-RUN npm ci -f --only=production && npm cache clean --force
-
+# Generate Prisma Client
 RUN npx prisma generate
 
+# Build the application
+RUN npm run build
 
-# 3. Production
-FROM node:21-alpine3.19 as prod
+# Stage 2: Production Stage
+FROM node:21-alpine3.19
 
+# Set the working directory
 WORKDIR /usr/src/app
 
-COPY --from=build /usr/src/app/node_modules ./node_modules   
+# Copy only necessary files from the builder stage
+COPY --from=builder /usr/src/app/package.json ./
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/prisma ./prisma
 
-COPY --from=build /usr/src/app/dist ./dist
-
-ENV NODE_ENV=production
-
-USER node
-
+# Expose the port the app runs on
 EXPOSE 8080
 
+# Define environment variables (optional, can also be passed during deployment)
+ENV NODE_ENV=production
+
+# Start the application
 CMD ["node", "dist/main.js"]
